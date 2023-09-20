@@ -1,0 +1,14 @@
+﻿﻿
+@model Category
+@{
+    Layout = "_AdminLayout";
+}
+
+<h2>Create Category</h2>
+
+<form method="post" action="@Url.Action("Create", "AdminCategory")" enctype="multipart/form-data">
+    <input type="hidden" name="Id" value="@Model.Id">
+    @await Html.PartialAsync("_FormFields", Model, new ViewDataDictionary(ViewData) {{"ButtonTitle", "Create"}})
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>

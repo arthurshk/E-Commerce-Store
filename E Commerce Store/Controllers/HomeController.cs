@@ -1,5 +1,6 @@
 ﻿using E_Commerce_Store.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Diagnostics;
 
@@ -7,6 +8,11 @@ namespace E_Commerce_Store.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly SiteContext _siteContext;
+        public HomeController(SiteContext siteContext)
+        {
+            _siteContext = siteContext;
+        }
         [HttpGet("/home")]
         public async Task<IActionResult> Index()
         {
@@ -67,34 +73,9 @@ namespace E_Commerce_Store.Controllers
                     Description = "Light and comfortable"
                 },
             };
-            var categories = new List<Category>()
-            {
-                
-                    new Category
-                    {
-                        Title = "Clothing"
-                    },
-                    new Category
-                    {
-                        Title = "Clothing"
-                    },
-                    new Category
-                    {
-                        Title = "Clothing"
-                    },
-                    new Category
-                    {
-                        Title = "Clothing"
-                    },
-                    new Category
-                    {
-                        Title = "Clothing"
-                    },
-                    new Category
-                    {
-                        Title = "Clothing"
-                    },
-            };
+            var categories = _siteContext.Categories
+                .Include(x => x.Image)
+                .ToList();
 
             ViewData["Products"] = products;
             ViewData["Categories"] = categories;

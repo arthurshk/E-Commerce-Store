@@ -1,0 +1,48 @@
+﻿
+@{
+    Layout = "_AdminLayout";
+}
+@model List<Product>
+
+<div class="container">
+    <div class="col-12">
+        <h1>Products</h1>
+        <div><a href="/admin/product/create" class="mx-1 btn btn-sm btn-outline-warning">Create</a></div>
+        <table class="table table-responsive table-hover">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th></th>
+                    <th>Title</th>
+                    <th>Price</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var item in Model)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>
+                            @if(item.MainImage != null)
+                            {
+                                <img src="@item.MainImage.Url" title="@item.Title" class="img-responsive" style="width: 200px"/>
+                            }
+                        </td>
+
+                        <td>@item.Title</td>
+                        <td>$ @item.Price</td>
+                        <td>
+                            <div class="d-flex">
+                                <a href="/admin/product/edit/@item.Id" class="mx-1 btn btn-sm btn-outline-warning">Edit</a>
+                                <form method="post" action="/admin/product/delete/@item.Id">
+                                    <button class="mx-1 btn btn-sm btn-outline-warning" type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

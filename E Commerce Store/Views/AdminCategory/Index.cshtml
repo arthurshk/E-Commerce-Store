@@ -1,0 +1,48 @@
+﻿
+@{
+    Layout = "_AdminLayout";
+}
+@model List<Category>
+
+<div class="container">
+    <div class="col-12">
+        <h1>Categories</h1>
+        <div><a href="/admin/category/create" class="mx-1 btn btn-sm btn-outline-warning">Create</a></div>
+        <table class="table table-responsive table-hover">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th></th>
+                    <th>Title</th>
+                    <th>Url</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var item in Model)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>
+                            @if(item.Image != null)
+                            {
+                                <img src="@item.Image.Url" title="@item.Title" class="img-responsive" style="width: 200px"/>
+                            }
+                        </td>
+
+                        <td>@item.Title</td>
+                        <td>@item.Url</td>
+                        <td>
+                            <div class="d-flex">
+                                <a href="/admin/category/edit/@item.Id" class="mx-1 btn btn-sm btn-outline-warning">Edit</a>
+                                <form method="post" action="/admin/category/delete/@item.Id">
+                                    <button class="mx-1 btn btn-sm btn-outline-warning" type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
