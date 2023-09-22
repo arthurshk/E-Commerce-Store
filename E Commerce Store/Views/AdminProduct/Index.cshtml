@@ -14,6 +14,7 @@
                     <th>Id</th>
                     <th></th>
                     <th>Title</th>
+                    <th>Category</th>
                     <th>Price</th>
                     <th></th>
                 </tr>
@@ -31,6 +32,7 @@
                         </td>
 
                         <td>@item.Title</td>
+                        <td>@item.Category?.Title</td>
                         <td>$ @item.Price</td>
                         <td>
                             <div class="d-flex">

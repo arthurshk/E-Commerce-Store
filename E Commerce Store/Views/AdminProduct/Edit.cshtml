@@ -1,12 +1,17 @@
 ﻿﻿
-@model Category
+@model Product
 @{
     Layout = "_AdminLayout";
 }
 
 <h2>Edit Category</h2>
-
-<form method="post" action="@Url.Action("Create", "AdminCategory")" enctype="multipart/form-data">
+<div class="col-md-6">
+    @if(Model.MainImage != null)
+    {
+    <img class="img-fluid" src="@Model.MainImage.Url"/>
+    }
+</div>
+<form method="post" action="@Url.Action("Edit", "AdminProduct")" enctype="multipart/form-data">
     <input type="hidden" name="Id" value="@Model.Id">
     @await Html.PartialAsync("_FormFields", Model, new ViewDataDictionary(ViewData) {{"ButtonTitle", "Edit"}})
     <button type="submit" class="btn btn-primary">Save</button>

@@ -67,36 +67,49 @@ namespace E_Commerce_Store.Controllers
         public IActionResult Edit(int id)
         {
             ViewData["Title"] = "Admin: Edit category";
-            return View(_siteContext.Categories.First(x => x.Id == id));
+            ViewData["Categories"] = _siteContext.Categories.ToList();
+            return View(FindProduct(id));
+        }
+        private Product FindProduct(int id)
+        {
+            return _siteContext.Products
+                  .Include(x => x.Category)
+                  .Include(x => x.MainImage)
+                  .Include(x => x.Images)
+                  .First(x => x.Id == id);
         }
         [HttpPost("/admin/product/edit/{id}")]
-        public IActionResult Edit(int id, [FromForm] Category form, IFormFile? image)
+        public IActionResult Edit(int id, [FromForm] Product form, IFormFile? mainImage, ICollection<IFormFile>? images)
         {
             ViewData["Title"] = "Admin: Edit category";
+            ViewData["Categories"] = _siteContext.Categories.ToList();
+
             if (!ModelState.IsValid)
             {
                 return View(form);
             }
-            var category = _siteContext.Categories.Include(x => x.Image).First(x => x.Id == id);
-            category.Title = form.Title;
-            category.Url = form.Url;
-            if (image != null)
+            var product = FindProduct(id);
+            product.Title = form.Title;
+            product.Description = form.Description;
+            product.Price = form.Price;
+            product.CategoryId = form.CategoryId;
+            if (mainImage != null)
             {
-                if(category.Image != null)
+                if(product.MainImage != null)
                 {
-                    System.IO.File.Delete(Path.Combine(_environment.WebRootPath, "uploads", category.Image.Filename));
-                    _siteContext.Images.Remove(category.Image);
+                    System.IO.File.Delete(Path.Combine(_environment.WebRootPath, "uploads", product.MainImage.Filename));
+                    _siteContext.Images.Remove(product.MainImage);
                 }
-                string filename = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+                string filename = Guid.NewGuid().ToString() + Path.GetExtension(mainImage.FileName);
                 using (var writer = new FileStream(Path.Combine(_environment.WebRootPath, "uploads", filename), FileMode.Create))
                 {
-                    image.CopyTo(writer);
+                    mainImage.CopyTo(writer);
                 }
-                category.Image = new Image()
+                product.MainImage = new Image()
                 {
                     Filename = filename
                 };
-                _siteContext.Images.Add(category.Image);
+                _siteContext.Images.Add(product.MainImage);
             }
             _siteContext.SaveChanges();
             return Redirect("/admin/product/index");

@@ -3,8 +3,10 @@
 *@
 @{
     string buttonTitle = this.ViewData["ButtonTitle"].ToString();
+    var categories = ViewData["Categories"] as List<Category>;
+    var categorySelectList = new SelectList(categories, nameof(Category.Id), nameof(Category.Title));
 }
-@model Category
+@model Product
 <div class="form-group">
     <label for="Title">Title</label>
     <input type="text" id="Title" name="Title" value="@Model.Title" class="form-control">
@@ -12,15 +14,27 @@
 </div>
 
 <div class="form-group">
-    <label for="Url">Url</label>
-    <textarea id="Url" name="Url" class="form-control">@Model.Url</textarea>
-    <span class="text-danger">@Html.ValidationMessageFor(m => m.Url)</span>
+    <label for="Description">Description</label>
+    <textarea id="Description" name="Description" class="form-control">@Model.Description</textarea>
+    <span class="text-danger">@Html.ValidationMessageFor(m => m.Description)</span>
 </div>
-<div class="form-group">
-    <label for="Image">Image</label>
-    @Html.TextBoxFor(m=>m.Image, new {@class="form-control", type="file", accept=".jpg,.png,.jpeg"})
-    <span class="text-danger">@Html.ValidationMessageFor(m => m.Url)</span>
 
+<div class="form-group">
+    <label for="Price">Price</label>
+    <input type="text" id="Price" name="Price" value="@Model.Price" min="0" step="0.01" class="form-control">
+    <span class="text-danger">@Html.ValidationMessageFor(m => m.Price)</span>
+</div>
+
+<div class="form-group">
+    <label for="Category">Category</label>
+    @Html.DropDownListFor(m => m.CategoryId,categorySelectList, new {@class="form-control"})
+    <span class="text-danger">@Html.ValidationMessageFor(m => m.CategoryId)</span>
+</div>
+
+<div class="form-group">
+    <label for="MainImage">Main Image</label>
+    @Html.TextBoxFor(m=>m.MainImage, new {@class="form-control", type="file", accept=".jpg,.png,.jpeg"})
+    <span class="text-danger">@Html.ValidationMessageFor(m => m.MainImage)</span>
 </div>
 
 <button type="submit" class="btn btn-primary">@buttonTitle</button>

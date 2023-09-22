@@ -16,63 +16,13 @@ namespace E_Commerce_Store.Controllers
         [HttpGet("/home")]
         public async Task<IActionResult> Index()
         {
-            var products = new List<Product>()
-            {
-                new Product
-                {
-                    Title = "Product",
-                    Price = 125.99M,
-                    Description = "Light and comfortable"
-                },
-                 new Product
-                {
-                    Title = "Product",
-                    Price = 125.99M,
-                    Description = "Light and comfortable"
-                },
-                  new Product
-                {
-                    Title = "Product",
-                    Price = 125.99M,
-                    Description = "Light and comfortable"
-                },
-                   new Product
-                {
-                    Title = "Product",
-                    Price = 125.99M,
-                    Description = "Light and comfortable"
-                },
-                    new Product
-                {
-                    Title = "Product",
-                    Price = 125.99M,
-                    Description = "Light and comfortable"
-                },
-                     new Product
-                {
-                    Title = "Product",
-                    Price = 125.99M,
-                    Description = "Light and comfortable"
-                },
-                      new Product
-                {
-                    Title = "Product",
-                    Price = 125.99M,
-                    Description = "Light and comfortable"
-                },
-                       new Product
-                {
-                    Title = "Product",
-                    Price = 125.99M,
-                    Description = "Light and comfortable"
-                },
-                        new Product
-                {
-                    Title = "Product",
-                    Price = 125.99M,
-                    Description = "Light and comfortable"
-                },
-            };
+            var products = _siteContext
+                .Products
+                .Include(x => x.MainImage)
+                .Include(x => x.Category)
+                .Include(x => x.Images)
+                .Take(6)
+                .ToList();
             var categories = _siteContext.Categories
                 .Include(x => x.Image)
                 .ToList();
@@ -82,16 +32,20 @@ namespace E_Commerce_Store.Controllers
             ViewData["NewProducts"] = products;
             return View();
         }
-
-        public IActionResult Privacy()
+        [HttpGet("/category/{id}/{url}")]
+        public async Task<IActionResult> Category(int id)
         {
-            return View();
-        }
+            var category = await _siteContext.Categories
+                .Include(x => x.Image)
+                .Include(x => x.Products)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            ViewData["Categories"] = await _siteContext.Categories
+                .Include(x => x.Image)
+                .Include(x => x.Products)
+                .ThenInclude(x => x.MainImage)
+                .ToListAsync();
+            return View(category);
         }
     }
 }
