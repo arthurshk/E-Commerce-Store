@@ -1,4 +1,5 @@
 ﻿using E_Commerce_Store.Models;
+using E_Commerce_Store.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,12 +8,12 @@ namespace E_Commerce_Store.Controllers
     public class AdminCategoryController : Controller
     {
         private readonly SiteContext _siteContext;
-        private readonly IWebHostEnvironment _environment;
+        public readonly ImageStorage _imageStorage;
 
-        public AdminCategoryController(SiteContext context, IWebHostEnvironment appEnvironment)
+        public AdminCategoryController(SiteContext context, ImageStorage imageStorage)
         {
             _siteContext = context;
-            _environment = appEnvironment;
+            _imageStorage = imageStorage;
         }
         [Route("/admin/category/index")]
         public IActionResult Index()
@@ -26,7 +27,7 @@ namespace E_Commerce_Store.Controllers
             return View(new Category());
         }
         [HttpPost("/admin/category/create")]
-        public IActionResult Create([FromForm] Category category, IFormFile? image)
+        public async Task<IActionResult> Create([FromForm] Category category, IFormFile? image)
         {
             ViewData["Title"] = "Admin: Create category";
             if (!ModelState.IsValid)
@@ -35,64 +36,40 @@ namespace E_Commerce_Store.Controllers
             }
             if(image != null)
             {
-                string filename = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
-                var directoryPath = Path.Combine(_environment.WebRootPath, "uploads");
-
-                if (!Directory.Exists(directoryPath))
-                {
-                    Directory.CreateDirectory(directoryPath);
-                }
-
-                using (var writer = new FileStream(Path.Combine(directoryPath, filename), FileMode.Create))
-                {
-                    image.CopyTo(writer);
-                }
-                category.Image = new Image()
-                {
-                    Filename = filename
-                };
-                _siteContext.Images.Add(category.Image);
+                category.Image = await _imageStorage.UploadAsync(image);
+            
             }
-            _siteContext.Categories.Add(category);
-            _siteContext.SaveChanges();
+           await _siteContext.Categories.AddAsync(category);
+          await  _siteContext.SaveChangesAsync();
             return Redirect("/admin/category/index");
         }
         [HttpGet("/admin/category/edit/{id}")]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
             ViewData["Title"] = "Admin: Edit category";
-            return View(_siteContext.Categories.First(x => x.Id == id));
+            return View(await _siteContext.Categories.FirstAsync(x => x.Id == id));
         }
         [HttpPost("/admin/category/edit/{id}")]
-        public IActionResult Edit(int id, [FromForm] Category form, IFormFile? image)
+        public async Task<IActionResult> Edit(int id, [FromForm] Category form, IFormFile? image)
         {
             ViewData["Title"] = "Admin: Edit category";
             if (!ModelState.IsValid)
             {
                 return View(form);
             }
-            var category = _siteContext.Categories.Include(x => x.Image).First(x => x.Id == id);
+            var category = await _siteContext.Categories.Include(x => x.Image).FirstAsync(x => x.Id == id);
             category.Title = form.Title;
             category.Url = form.Url;
             if (image != null)
             {
                 if(category.Image != null)
                 {
-                    System.IO.File.Delete(Path.Combine(_environment.WebRootPath, "uploads", category.Image.Filename));
-                    _siteContext.Images.Remove(category.Image);
+                    _imageStorage.Remove(category.Image);
                 }
-                string filename = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
-                using (var writer = new FileStream(Path.Combine(_environment.WebRootPath, "uploads", filename), FileMode.Create))
-                {
-                    image.CopyTo(writer);
-                }
-                category.Image = new Image()
-                {
-                    Filename = filename
-                };
-                _siteContext.Images.Add(category.Image);
+                category.Image = await _imageStorage.UploadAsync(image);
+           
             }
-            _siteContext.SaveChanges();
+          await  _siteContext.SaveChangesAsync();
             return Redirect("/admin/category/index");
         }
     }

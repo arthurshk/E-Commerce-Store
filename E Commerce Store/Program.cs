@@ -1,4 +1,5 @@
 using E_Commerce_Store.Models;
+using E_Commerce_Store.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,6 +25,10 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
     options.Password.RequireUppercase = false;
 }).AddRoles<IdentityRole<int>>()
 .AddEntityFrameworkStores<SiteContext>();
+
+builder.Services.Configure<ImageStorage>(x => 
+{ x.UploadFolder = "uploads"; })
+    .AddScoped<ImageStorage>();
 
 var app = builder.Build();
 
