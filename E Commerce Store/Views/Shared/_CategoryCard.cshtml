@@ -6,8 +6,12 @@
 }
 <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
     <p class="text-right">@Model.Products?.Count() Products</p>
-    <a href="" class="cat-img position-relative overflow-hidden mb-3">
+    <a href="/category/@Model.Id/@Model.Url" class="cat-img position-relative overflow-hidden mb-3">
         <img class="img-fluid" src="@Model.Image?.Url" alt="@Model.Title">
     </a>
     <h5 class="font-weight-semi-bold m-0">@Model.Title</h5>
 </div>
+
+
+
+
