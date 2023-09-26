@@ -1,5 +1,6 @@
 using E_Commerce_Store.Models;
 using E_Commerce_Store.Services;
+using E_Commerce_Store.Views.Middlewares;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -47,6 +48,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseBuyerUid();
 
 app.UseEndpoints(endpoints =>
 {
