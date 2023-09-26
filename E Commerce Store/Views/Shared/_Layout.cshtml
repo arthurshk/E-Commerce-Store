@@ -92,9 +92,9 @@
                     <i class="fas fa-heart text-primary"></i>
                     <span class="badge">0</span>
                 </a>
-                <a href="" class="btn border">
+                <a href="/cart" class="btn border">
                     <i class="fas fa-shopping-cart text-primary"></i>
-                    <span class="badge">0</span>
+                    <span class="badge" id="cart-product-count">@Context.Items["CartProductsCount"]</span>
                 </a>
             </div>
         </div>
@@ -190,7 +190,8 @@
 
     <!-- Template Javascript -->
     <script src="/js/main.js"></script>
- 
+    <script src="/js/cart.js"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 

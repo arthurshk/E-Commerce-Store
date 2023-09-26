@@ -18,8 +18,9 @@
                 {
                     Expires = new DateTimeOffset(2038, 1,1,0,0,0,TimeSpan.FromHours(0))
                 });
-                context.Items[BuyerCookieParam] = uid;
             }
+            context.Items[BuyerCookieParam] = uid;
+
             await _next(context);
         }
     }

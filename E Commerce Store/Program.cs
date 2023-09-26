@@ -50,6 +50,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseBuyerUid();
+app.UseCartProductsCount();
 
 app.UseEndpoints(endpoints =>
 {

@@ -1,4 +1,5 @@
 ﻿using E_Commerce_Store.Models;
+using E_Commerce_Store.Views.Middlewares;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -60,6 +61,9 @@ namespace E_Commerce_Store.Controllers
 
             return View(category);
         }
+       
+        
+        
         [HttpGet("/product/{id}")]
         public async Task<IActionResult> Product(int id)
         {
@@ -82,6 +86,27 @@ namespace E_Commerce_Store.Controllers
             ViewData["Title"] = string.Format("{0} | Shop", product.Title);
             return View(product);
 
+        }
+        [HttpGet("/cart")]
+        public async Task<IActionResult> Cart()
+        {
+            var uid = HttpContext.Items[BuyerUidMiddleware.BuyerCookieParam].ToString();
+            var cart = await _siteContext.Carts.Where(x => x.Uid == uid)
+                .Include(x => x.Products)
+                .ThenInclude(x => x.Product)
+                .ThenInclude(p => p.MainImage)
+                .FirstAsync();
+
+            ViewData["Categories"] = await _siteContext.Categories
+             .Include(x => x.Image)
+             .Include(x => x.Products)
+             .ThenInclude(x => x.MainImage)
+             .ToListAsync();
+
+
+            ViewData["Title"] = string.Format("{0} | Shop", "Cart");
+
+            return View(cart);
         }
     }
 }
