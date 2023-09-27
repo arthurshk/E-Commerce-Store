@@ -10,6 +10,7 @@ namespace E_Commerce_Store.Controllers
     public class HomeController : Controller
     {
         private readonly SiteContext _siteContext;
+
         public HomeController(SiteContext siteContext)
         {
             _siteContext = siteContext;
@@ -62,8 +63,6 @@ namespace E_Commerce_Store.Controllers
             return View(category);
         }
        
-        
-        
         [HttpGet("/product/{id}")]
         public async Task<IActionResult> Product(int id)
         {
@@ -79,8 +78,8 @@ namespace E_Commerce_Store.Controllers
 
             var otherProducts = await _siteContext.Products
               .Include(x => x.MainImage)
-              .Where(x => x.Category.Id == product.Category.Id)
               .Where(x=>x.Id != product.Id)
+              .Take(6)
               .ToListAsync();
             ViewData["OtherProducts"] = otherProducts;
             ViewData["Title"] = string.Format("{0} | Shop", product.Title);

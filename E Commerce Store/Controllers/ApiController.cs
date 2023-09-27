@@ -14,19 +14,42 @@ namespace E_Commerce_Store.Controllers
         {
             _siteContext = siteContext;
         }
-        [HttpPut("/api/add-to-cart")]
-        public async Task<IActionResult> AddToCart([FromBody] AddProductRequest addProduct)
+        private async Task<Cart?> UserCart()
         {
             var uid = HttpContext.Items[BuyerUidMiddleware.BuyerCookieParam].ToString();
             var cart = await _siteContext.Carts.Where(x => x.Uid == uid)
                 .Include(x => x.Products)
                 .ThenInclude(x => x.Product)
                 .FirstOrDefaultAsync();
-            if(cart == null)
+            if (cart == null)
             {
                 cart = new Cart() { Uid = uid };
                 _siteContext.Carts.Add(cart);
             }
+            return cart;
+        }
+
+        [HttpDelete("/api/remove-from-cart")]
+        public async Task<IActionResult> RemoveFromCart([FromBody] int productId)
+        {
+            var cart = await UserCart();
+            var productToRemove = cart.Products.FirstOrDefault(x => x.Id == productId);
+            if (productToRemove != null)
+            {
+                cart.Products.Remove(productToRemove);
+                return Ok(new { Ok = true });
+            } else
+            {
+                cart.Products.Remove(productToRemove);
+                return NotFound(new { Ok = false });
+            }
+        }
+
+        [HttpPut("/api/add-to-cart")]
+        public async Task<IActionResult> AddToCart([FromBody] AddProductRequest addProduct)
+        {
+            var cart = await UserCart();
+          
             var product = await _siteContext.Products.FirstAsync(x => x.Id == addProduct.ProductId);
 
             var cartProduct = cart.Products.Where(x => x.Product.Id == product.Id).FirstOrDefault();
@@ -50,5 +73,6 @@ namespace E_Commerce_Store.Controllers
                 CartProductsCount = cart.Products.Count,
             });
         }
+    
     }
 }

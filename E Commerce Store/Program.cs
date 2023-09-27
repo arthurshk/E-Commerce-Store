@@ -27,6 +27,7 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 }).AddRoles<IdentityRole<int>>()
 .AddEntityFrameworkStores<SiteContext>();
 
+
 builder.Services.Configure<ImageStorage>(x => 
 { x.UploadFolder = "uploads"; })
     .AddScoped<ImageStorage>();

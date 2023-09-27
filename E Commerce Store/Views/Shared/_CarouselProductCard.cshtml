@@ -11,7 +11,8 @@
     <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
         <h6 class="text-truncate mb-3">@Model.Title</h6>
         <div class="d-flex justify-content-center">
-            <h6>@Model.Price</h6><h6 class="text-muted ml-2">
+            <h6>@Model.Price.ToString("#.##")</h6>
+            <h6 class="text-muted ml-2">
                 <del>$@((Model.Price + Model.Price * 0.15M).ToString("#.##"))</del>
 
             </h6>
