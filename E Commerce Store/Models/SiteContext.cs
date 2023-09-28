@@ -13,5 +13,7 @@ namespace E_Commerce_Store.Models
         public virtual DbSet<User> Users { get; set; } = null!;
         public virtual DbSet<Cart> Carts { get; set; } = null!;
         public virtual DbSet<CartProduct> CartProducts { get; set; } = null!;
+        public virtual DbSet<Buyer> Buyers { get; set; } = null!;
+        
     }
 }
