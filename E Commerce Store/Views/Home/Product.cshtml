@@ -36,15 +36,15 @@
                     <div class="navbar-nav mr-auto py-0">
                         <a href="/home" class="nav-item nav-link">Home</a>
                         <a href="@Context.Request.Path" class="nav-item nav-link active">@Model.Title</a>
-                        <a href="detail.html" class="nav-item nav-link">Shop Detail</a>
-                        <div class="nav-item dropdown">
+                        <a href="/cart" class="nav-item nav-link">Cart</a>
+                       @*  <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
                             <div class="dropdown-menu rounded-0 m-0">
                                 <a href="cart.html" class="dropdown-item">Shopping Cart</a>
                                 <a href="checkout.html" class="dropdown-item">Checkout</a>
                             </div>
-                        </div>
-                        <a href="contact.html" class="nav-item nav-link">Contact</a>
+                        </div> *@@* 
+                        <a href="contact.html" class="nav-item nav-link">Contact</a> *@
                     </div>
                     <div class="navbar-nav ml-auto py-0">
                         <a href="" class="nav-item nav-link">Login</a>
@@ -168,7 +168,7 @@
                             <i class="fa fa-minus"></i>
                         </button>
                     </div>
-                    <input type="text" class="form-control bg-secondary text-center" value="1" min="1" step="1">
+                    <input type="text" disabled class="form-control bg-secondary text-center" value="1" min="1" step="1">
                     <div class="input-group-btn">
                         <button class="btn btn-primary btn-plus">
                             <i class="fa fa-plus"></i>
@@ -180,16 +180,16 @@
             <div class="d-flex pt-2">
                 <p class="text-dark font-weight-medium mb-0 mr-2">Share on:</p>
                 <div class="d-inline-flex">
-                    <a class="text-dark px-2" href="">
+                    <a class="text-dark px-2" href="https://www.facebook.com/">
                         <i class="fab fa-facebook-f"></i>
                     </a>
-                    <a class="text-dark px-2" href="">
+                    <a class="text-dark px-2" href="https://twitter.com/">
                         <i class="fab fa-twitter"></i>
                     </a>
-                    <a class="text-dark px-2" href="">
+                    <a class="text-dark px-2" href="https://linkedin.com/">
                         <i class="fab fa-linkedin-in"></i>
                     </a>
-                    <a class="text-dark px-2" href="">
+                    <a class="text-dark px-2" href="https://www.pinterest.com/">
                         <i class="fab fa-pinterest"></i>
                     </a>
                 </div>

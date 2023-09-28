@@ -32,17 +32,17 @@
                 </button>
                 <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                     <div class="navbar-nav mr-auto py-0">
-                        <a href="/home" class="nav-item nav-link">Home</a>@* 
-                        <a href="shop.html" class="nav-item nav-link">Shop</a>
+                        <a href="/home" class="nav-item nav-link">Home</a>
+                        <a href="/cart" class="nav-item nav-link active">Cart</a>@* 
                         <a href="detail.html" class="nav-item nav-link">Shop Detail</a> *@
-                        <div class="nav-item dropdown">
+                     @*    <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle active" data-toggle="dropdown">Pages</a>
                             <div class="dropdown-menu rounded-0 m-0">
                                 <a href="/home" class="dropdown-item">Shopping Cart</a>
                                 <a href="/home" class="dropdown-item">Checkout</a>
                             </div>
-                        </div>@* 
-                        <a href="contact.html" class="nav-item nav-link">Contact</a> *@
+                        </div>@*  *@
+                    @*     <a href="contact.html" class="nav-item nav-link">Contact</a> *@ 
                     </div>
                     <div class="navbar-nav ml-auto py-0">
                         <a href="" class="nav-item nav-link">Login</a>
@@ -88,13 +88,13 @@
                             <td class="align-middle"><img src="@cartProduct.Product.MainImage.Url" alt="" style="width: 50px;"> @cartProduct.Product.Title</td>
                             <td class="align-middle">$@cartProduct.Price.ToString("#.##")</td>
                             <td class="align-middle">
-                                <div class="input-group quantity mx-auto" style="width: 100px;">
+                                <div class="input-group quantity mx-auto quantity-wrapper" style="width: 100px;">
                                     <div class="input-group-btn">
                                         <button class="btn btn-sm btn-primary btn-minus">
                                             <i class="fa fa-minus"></i>
                                         </button>
                                     </div>
-                                    <input type="text" class="quantity form-control form-control-sm bg-secondary text-center" value="@cartProduct.Quantity">
+                                    <input type="text" disabled class="quantity form-control form-control-sm bg-secondary text-center" value="@cartProduct.Quantity">
                                     <div class="input-group-btn">
                                         <button class="btn btn-sm btn-primary btn-plus">
                                             <i class="fa fa-plus"></i>
@@ -102,36 +102,15 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="align-middle">$@cartProduct.TotalPrice().ToString("#.##")</td>
+                            <td class="align-middle product-total-price">$@cartProduct.TotalPrice().ToString("#.##")</td>
                             <td class="align-middle"><button class="btn btn-sm btn-primary cart-product-remove"><i class="fa fa-times"></i></button></td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
-        <div class="col-lg-4">
-            <div class="card border-secondary mb-5">
-                <div class="card-header bg-secondary border-0">
-                    <h4 class="font-weight-semi-bold m-0">Cart Summary</h4>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between mb-3 pt-1">
-                        <h6 class="font-weight-medium">Subtotal</h6>
-                        <h6 class="font-weight-medium">$@Model.TotalProductsPrice().ToString("#.##")</h6>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <h6 class="font-weight-medium">Shipping</h6>
-                        <h6 class="font-weight-medium">$@Model.ShippingPrice().ToString("#.##")</h6>
-                    </div>
-                </div>
-                <div class="card-footer border-secondary bg-transparent">
-                    <div class="d-flex justify-content-between mt-2">
-                        <h5 class="font-weight-bold">Total</h5>
-                        <h5 class="font-weight-bold">$@Model.TotalAmount().ToString("#.##")</h5>
-                    </div>
-                    <button class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</button>
-                </div>
-            </div>
+        <div class="col-lg-4 cart-summary">
+          @await Html.PartialAsync("_CartSummary", Model)
         </div>
     </div>
 </div>
@@ -140,6 +119,40 @@
     <!-- Cart.cshtml End -->
     @section Scripts {
         <script>
+
+            $("input.quantity").on("change", e => {
+            let productId = $(e.target).closest('tr').data("id")
+            let quantity = $(e.target).closest('tr').find('input').val()
+            let productTotal = $(e.target).closest('tr').find('td.product-total-price')
+
+                console.log({
+                productId: Number(productId),
+                quantity: Number(quantity)
+                })
+
+            fetch("/api/set-quantity", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    productId: Number(productId),
+                    quantity: Number(quantity)
+                })
+            }).then(r => r.json())
+            .then(data => {
+                if (data.ok) {
+                        let total = data.productTotal.toFixed(2)
+                        productTotal.text(`$${total}`)
+                        fetch('/cart/summary')
+                        .then(r => r.text())
+                        .then(html => {
+                            $(".cart-summary").html(html)
+                        })
+                }
+            })
+       })
+
             $("button.cart-product-remove").on("click", e=>{
                 let productId = $(e.target).closest('tr').data("id")
           
@@ -155,7 +168,11 @@
                 .then(data => {
                     console.log(data)
                     if(data.ok){
+                        $("#cart-product-count").text(data.cartProductsCount)
                         $(`tr[data-id=${productId}]`).remove()
+                        fetch('/cart/summary').then(r => r.text()).then(html =>{
+                            $(".cart-summary").html(html)
+                        })
                     }
                 })
             })

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace E_Commerce_Store.Controllers
 {
-    public class ApiController : ControllerBase
+    public class ApiController : Controller
     {
         private readonly SiteContext _siteContext;
         public ApiController(SiteContext siteContext)
@@ -30,17 +30,20 @@ namespace E_Commerce_Store.Controllers
         }
 
         [HttpDelete("/api/remove-from-cart")]
-        public async Task<IActionResult> RemoveFromCart([FromBody] int productId)
+        public async Task<IActionResult> RemoveFromCart([FromBody]RemoveProductRequest removeProductRequest)
         {
+            var productId = removeProductRequest.ProductId;
             var cart = await UserCart();
             var productToRemove = cart.Products.FirstOrDefault(x => x.Id == productId);
             if (productToRemove != null)
             {
                 cart.Products.Remove(productToRemove);
-                return Ok(new { Ok = true });
+                await _siteContext.SaveChangesAsync();
+                return Ok(new { Ok = true,
+                CartProductsCount = cart.Products.Count,
+                });
             } else
             {
-                cart.Products.Remove(productToRemove);
                 return NotFound(new { Ok = false });
             }
         }
@@ -70,9 +73,31 @@ namespace E_Commerce_Store.Controllers
 
             return Ok(new
             {
+                Ok = true,
                 CartProductsCount = cart.Products.Count,
             });
         }
-    
+
+        [HttpPost("/api/set-quantity")]
+        public async Task<IActionResult> SetQuantity([FromBody] SetProductQuantityRequest setProductQuantity)
+        {
+            var cart = await UserCart();
+            var cartProduct = cart.Products.FirstOrDefault(x => x.Id == setProductQuantity.ProductId);
+            if (cartProduct == null)
+            {
+                return NotFound(new { Ok = false });
+            }
+                cartProduct.Quantity = setProductQuantity.Quantity;
+            
+            await _siteContext.SaveChangesAsync();
+
+            return Ok(new
+            {
+                Ok = true,
+                ProductTotal = cartProduct.TotalPrice(),
+                CartProductsCount = cart.Products.Count,
+            });
+        }
+
     }
 }

@@ -13,7 +13,7 @@
                 newVal = 1;
             }
         }
-        button.parent().parent().find('input').val(newVal);
+        button.closest("div.quantity-wrapper").find('input').val(newVal).change();
         button.closest("div.quantity-wrapper").find("button.add-cart").attr("data-quantity", newVal)
 
     });
@@ -40,6 +40,8 @@
         }).then(r => r.json())
             .then(data => {
                 console.log(data)
+                $("#cart-product-count").text(data.cartProductsCount)
+
             })
     })
 

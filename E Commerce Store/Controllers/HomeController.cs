@@ -15,6 +15,22 @@ namespace E_Commerce_Store.Controllers
         {
             _siteContext = siteContext;
         }
+
+        private async Task<Cart?> UserCart()
+        {
+            var uid = HttpContext.Items[BuyerUidMiddleware.BuyerCookieParam].ToString();
+            var cart = await _siteContext.Carts.Where(x => x.Uid == uid)
+                .Include(x => x.Products)
+                .ThenInclude(x => x.Product)
+                .FirstOrDefaultAsync();
+            if (cart == null)
+            {
+                cart = new Cart() { Uid = uid };
+                _siteContext.Carts.Add(cart);
+            }
+            return cart;
+        }
+
         [HttpGet("/home")]
         public async Task<IActionResult> Index()
         {
@@ -62,7 +78,14 @@ namespace E_Commerce_Store.Controllers
 
             return View(category);
         }
-       
+
+        [HttpGet("/cart/summary")]
+        public async Task<IActionResult> CartSummary()
+        {
+            return PartialView("~/Views/Home/_CartSummary.cshtml", await UserCart());
+
+        }
+
         [HttpGet("/product/{id}")]
         public async Task<IActionResult> Product(int id)
         {
