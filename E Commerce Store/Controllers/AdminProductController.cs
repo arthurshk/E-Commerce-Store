@@ -114,5 +114,13 @@ namespace E_Commerce_Store.Controllers
             _siteContext.SaveChanges();
             return Redirect("/admin/product/index");
         }
+        [HttpPost("/admin/product/delete/{Id}")]
+        public IActionResult Delete(int id)
+        {
+            var product = _siteContext.Products.FirstOrDefault(x => x.Id == id);
+            _siteContext.Products.Remove(product);
+            _siteContext.SaveChanges();
+            return Redirect("/admin/product/index");
+        }
     }
 }
